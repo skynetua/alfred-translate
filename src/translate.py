@@ -1,150 +1,90 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import urllib.parse
-import urllib.request
+from urllib.parse import urlencode
+import asyncio
+import aiohttp
 import json
 import feedback
-from multiprocessing import Pool
 import re
 import sys
-
-dict_api_key = 'dict.1.1.20140108T003739Z.52c324b8a4eea3ac.5767100e8cc7b997dad88353e47aa4857e786beb'
-translate_api_key = 'trnsl.1.1.20130512T104455Z.8a0ed400b0d249ba.48af47e72f40c8991e4185556b825273d104af68'
 
 
 def is_ascii(s):
     """http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii"""
     return all(ord(c) < 128 for c in s)
 
-
 def get_translation_direction(text):
-    """Returns direction of translation. en-ru or ru-en"""
+    """Returns direction of translation."""
     if is_ascii(text):
         return 'en-ru'
     else:
         return 'ru-en'
 
 
-def get_lang(text):
-    """Returns either 'ru' or 'en' corresponding for text"""
-    if is_ascii(text):
-        return 'en'
-    else:
-        return 'ru'
+async def process_response_as_json(url, session):
+    try:
+        async with session.get(url=url) as response:
+            resp = await response.read()
+            return json.loads(resp)
+        
+    except Exception as e:
+        print("Failed to get url {} due to {}.".format(url, e.__class__))
 
 
-def convert_spelling_suggestions(spelling_suggestions):
-    res = []
-    if len(spelling_suggestions) != 0:
-        for spelling_suggestion in spelling_suggestions:
-            res.append({
-                'title': spelling_suggestion,
-                'autocomplete': spelling_suggestion
-            })
-    return res
-
-
-def get_spelling_suggestions(spelling_suggestions):
-    """Returns spelling suggestions from JSON if any """
-    res = []
-    if spelling_suggestions and spelling_suggestions[0] and spelling_suggestions[0]['s']:
-        res = spelling_suggestions[0]['s']
-    return res
-
-
-def get_translation_suggestions(input_string, spelling_suggestions, vocabulary_article):
-    """Returns XML with translate suggestions"""
-    res = []
-    if len(spelling_suggestions) == 0 and len(vocabulary_article) == 0:
-        return res
-
-    if len(vocabulary_article['def']) != 0:
-        for article in vocabulary_article['def']:
-            for translation in article['tr']:
-                if 'ts' in article.keys():
-                    subtitle = article['ts']
-                elif 'ts' in translation.keys():
-                    subtitle = translation['ts']
-                else:
-                    subtitle = ''
-                res.append({
-                    'translation': translation['text'],
-                    'transcription': subtitle,
-                })
-
-    return res
-
-
-def process_response_as_json(request_url):
-    """Accepts request url returns response as """
-    request = urllib.request.urlopen(request_url)
-    response_json = json.loads(request.read())
-    return response_json
+async def process_requests(urls):
+    async with aiohttp.ClientSession() as session:
+        return await asyncio.gather(*[process_response_as_json(url, session) for url in urls])
 
 
 def get_output(input_string):
     """Main entry point"""
-    pool = Pool(processes=3)
     fb = feedback.Feedback()
     input_string = input_string.strip()
     if not input_string:
         fb.add_item(title="Translation not found", valid="no")
         return fb
 
-    # Building urls
-    translationDirection = get_translation_direction(input_string)
+    # Building url
+    source_language, target_language = get_translation_direction(input_string).split('-')
+    single_word = len(re.split(' ', input_string)) == 1
 
-    # Build spell check url
-    spellCheckParams = {
-        'text': input_string,
-        'lang': get_lang(input_string)
+    """
+    https://stackoverflow.com/questions/26714426/what-is-the-meaning-of-google-translate-query-params
+    Using dictionary for single word or alternate translations for sentence
+    """
+    params = {
+        'client': 'gtx',
+        'dj': 1,
+        'sl': source_language,
+        'tl': target_language,
+        'q': input_string,
+        'dt': 'bd' if single_word else 'at'
     }
-    spellCheckUrl = 'https://speller.yandex.net/services/spellservice.json/checkText' + '?' + urllib.parse.urlencode(
-        spellCheckParams)
-
-    # Build article url
-    articleParams = {
-        'key': dict_api_key,
-        'lang': translationDirection,
-        'text': input_string,
-        'flags': 4
-    }
-    articleUrl = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup' + '?' + urllib.parse.urlencode(
-        articleParams)
+    url = 'https://translate.googleapis.com/translate_a/single?' + urlencode(params)
 
     # Making requests in parallel
-    requestsUrls = [spellCheckUrl, articleUrl]
-    responses = pool.map(process_response_as_json, requestsUrls)
+    responses = asyncio.run(process_requests([url]))
 
-    spelling_suggestions_items = get_spelling_suggestions(responses[0])
-    # Generate possible xml outputs
-    formatted_spelling_suggestions = convert_spelling_suggestions(spelling_suggestions_items)
-    formated_translation_suggestions = get_translation_suggestions(input_string, spelling_suggestions_items,
-                                                                   responses[1])
-    words_in_phase = len(re.split(' ', input_string))
-
-    # Output
-    if len(formatted_spelling_suggestions) == 0 and len(formated_translation_suggestions) == 0:
+    translation_response = responses[0]
+    if 'dict' in translation_response:
+        """Check single word translation of dict type"""
+        for item in translation_response['dict']:
+            for entry in item.get('entry', []):
+                fb.add_item(
+                    title=entry['word'].capitalize(),
+                    arg=entry['word'],
+                    subtitle=', '.join(entry.get('reverse_translation', [])))
+    elif 'alternative_translations' in translation_response:
+        """Check sentence translation of alt type"""            
+        for alt_translations in translation_response['alternative_translations']:
+            for alt in alt_translations.get('alternative', []):
+                fb.add_item(
+                    title=alt['word_postproc'].capitalize(),
+                    arg=alt['word_postproc'],
+                    subtitle=alt_translations['src_phrase'])
+    else:
         fb.add_item(title="Translation not found", valid="no")
-        return fb
-
-    # Prepare suggestions output
-    # Spellcheck error
-    if words_in_phase <= 2 and len(formatted_spelling_suggestions) != 0:
-        for spelling_suggestion in formatted_spelling_suggestions:
-            fb.add_item(title=spelling_suggestion['title'],
-                        autocomplete=spelling_suggestion['autocomplete'],
-                        icon='spellcheck.png')
-
-    # Translations output
-    for formatted_translated_suggestion in formated_translation_suggestions:
-        fb.add_item(
-            title=formatted_translated_suggestion['translation'],
-            arg=formatted_translated_suggestion['translation'],
-            subtitle=formatted_translated_suggestion['transcription']
-        )
     return fb
-
 
 if __name__ == '__main__':
     print(get_output(sys.argv[1]))
