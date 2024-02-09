@@ -5,7 +5,6 @@ import asyncio
 import aiohttp
 import json
 import feedback
-import re
 import sys
 
 
@@ -15,11 +14,12 @@ def is_ascii(s):
 
 def get_translation_direction(text):
     """Returns direction of translation."""
-    if is_ascii(text):
-        return 'en-ru'
-    else:
-        return 'ru-en'
+    lang = sys.argv[2]
+    return f'en-{lang}' if is_ascii(text) else f'{lang}-en'
 
+async def process_requests(urls):
+    async with aiohttp.ClientSession() as session:
+        return await asyncio.gather(*[process_response_as_json(url, session) for url in urls])
 
 async def process_response_as_json(url, session):
     try:
@@ -29,12 +29,6 @@ async def process_response_as_json(url, session):
         
     except Exception as e:
         print("Failed to get url {} due to {}.".format(url, e.__class__))
-
-
-async def process_requests(urls):
-    async with aiohttp.ClientSession() as session:
-        return await asyncio.gather(*[process_response_as_json(url, session) for url in urls])
-
 
 def get_output(input_string):
     """Main entry point"""
@@ -46,7 +40,6 @@ def get_output(input_string):
 
     # Building url
     source_language, target_language = get_translation_direction(input_string).split('-')
-    single_word = len(re.split(' ', input_string)) == 1
 
     """
     https://stackoverflow.com/questions/26714426/what-is-the-meaning-of-google-translate-query-params
@@ -58,9 +51,9 @@ def get_output(input_string):
         'sl': source_language,
         'tl': target_language,
         'q': input_string,
-        'dt': 'bd' if single_word else 'at'
+        'dt': ['at', 'bd']
     }
-    url = 'https://translate.googleapis.com/translate_a/single?' + urlencode(params)
+    url = 'https://translate.googleapis.com/translate_a/single?' + urlencode(params, doseq=True)
 
     # Making requests in parallel
     responses = asyncio.run(process_requests([url]))

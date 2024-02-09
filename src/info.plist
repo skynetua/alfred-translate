@@ -4,8 +4,6 @@
 <dict>
 	<key>bundleid</key>
 	<string></string>
-	<key>category</key>
-	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
 		<key>94EED11C-93A9-4FF4-8F28-14E546743485</key>
@@ -46,13 +44,13 @@
 		</array>
 	</dict>
 	<key>createdby</key>
-	<string>Dmitry Podgorniy</string>
+	<string>Oleksandr Kapshuk</string>
 	<key>description</key>
-	<string>Translate en-ru and ru-en</string>
+	<string>Quck translation between two languages</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Translate</string>
+	<string>Quick Translate</string>
 	<key>objects</key>
 	<array>
 		<dict>
@@ -82,11 +80,11 @@
 				<key>focusedappvariablename</key>
 				<string></string>
 				<key>hotkey</key>
-				<integer>17</integer>
+				<integer>6</integer>
 				<key>hotmod</key>
-				<integer>393216</integer>
+				<integer>786432</integer>
 				<key>hotstring</key>
-				<string>T</string>
+				<string>Z</string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -106,12 +104,18 @@
 			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
 				<key>argumenttype</key>
 				<integer>0</integer>
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>keyword</key>
-				<string>t</string>
+				<string>{var:kw}</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -121,21 +125,20 @@
 				<key>queuemode</key>
 				<integer>2</integer>
 				<key>runningsubtext</key>
-				<string>Перевожу / translating</string>
+				<string>Translating</string>
 				<key>script</key>
-				<string>import translate
-print translate.get_output("{query}")
-</string>
+				<string>source ~/.bashrc;
+python3 ./translate.py "$1" $lang;</string>
 				<key>scriptargtype</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>en-ru, ru-en</string>
+				<string>en-{var:lang}, {var:lang}-en</string>
 				<key>title</key>
 				<string>Translate</string>
 				<key>type</key>
-				<integer>3</integer>
+				<integer>0</integer>
 				<key>withspace</key>
 				<true/>
 			</dict>
@@ -144,7 +147,7 @@ print translate.get_output("{query}")
 			<key>uid</key>
 			<string>94EED11C-93A9-4FF4-8F28-14E546743485</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -153,6 +156,8 @@ print translate.get_output("{query}")
 				<false/>
 				<key>clipboardtext</key>
 				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
 				<key>transient</key>
 				<false/>
 			</dict>
@@ -161,7 +166,7 @@ print translate.get_output("{query}")
 			<key>uid</key>
 			<string>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -171,33 +176,80 @@ print translate.get_output("{query}")
 		<key>7F6DE136-5E1D-4A3A-84E8-269B076CE825</key>
 		<dict>
 			<key>xpos</key>
-			<integer>500</integer>
+			<real>445</real>
 			<key>ypos</key>
-			<real>10</real>
+			<real>35</real>
 		</dict>
 		<key>94EED11C-93A9-4FF4-8F28-14E546743485</key>
 		<dict>
 			<key>xpos</key>
-			<integer>300</integer>
+			<real>245</real>
 			<key>ypos</key>
-			<real>70</real>
+			<real>160</real>
 		</dict>
 		<key>E59094FA-7C50-4B18-8B4D-518D96B0966F</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>45</real>
 			<key>ypos</key>
-			<real>70</real>
+			<real>160</real>
 		</dict>
 		<key>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</key>
 		<dict>
 			<key>xpos</key>
-			<integer>700</integer>
+			<real>445</real>
 			<key>ypos</key>
-			<real>190</real>
+			<real>160</real>
 		</dict>
 	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>t||е</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Keyword for workflow activation</string>
+			<key>label</key>
+			<string>Activation keyword</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>kw</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>ru</string>
+				<key>placeholder</key>
+				<string>2 char ISO 639 language code</string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>This language will be used as souce language or target from English</string>
+			<key>label</key>
+			<string>Base language</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>lang</string>
+		</dict>
+	</array>
+	<key>version</key>
+	<string>1.0</string>
 	<key>webaddress</key>
-	<string>https://github.com/podgorniy/alfred-translate</string>
+	<string>https://github.com/skynetua/alfred-translate</string>
 </dict>
 </plist>
