@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string></string>
+	<string>com.skynetua.alfred-qtranslate</string>
 	<key>connections</key>
 	<dict>
 		<key>94EED11C-93A9-4FF4-8F28-14E546743485</key>
@@ -12,9 +12,9 @@
 				<key>destinationuid</key>
 				<string>7F6DE136-5E1D-4A3A-84E8-269B076CE825</string>
 				<key>modifiers</key>
-				<integer>262144</integer>
+				<integer>1048576</integer>
 				<key>modifiersubtext</key>
-				<string>Search/поиск</string>
+				<string></string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -59,7 +59,7 @@
 				<key>browser</key>
 				<string></string>
 				<key>searcher</key>
-				<integer>1635215215</integer>
+				<integer>1635218546</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.systemwebsearch</string>
@@ -80,11 +80,11 @@
 				<key>focusedappvariablename</key>
 				<string></string>
 				<key>hotkey</key>
-				<integer>6</integer>
+				<integer>-1</integer>
 				<key>hotmod</key>
-				<integer>786432</integer>
+				<integer>524288</integer>
 				<key>hotstring</key>
-				<string>Z</string>
+				<string>double tap</string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -127,8 +127,7 @@
 				<key>runningsubtext</key>
 				<string>Translating</string>
 				<key>script</key>
-				<string>source ~/.bashrc;
-python3 ./translate.py "$1" $lang;</string>
+				<string>python3 ./translate.py "$1" $lang $alt;</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -176,30 +175,30 @@ python3 ./translate.py "$1" $lang;</string>
 		<key>7F6DE136-5E1D-4A3A-84E8-269B076CE825</key>
 		<dict>
 			<key>xpos</key>
-			<real>445</real>
+			<real>435</real>
 			<key>ypos</key>
-			<real>35</real>
+			<real>15</real>
 		</dict>
 		<key>94EED11C-93A9-4FF4-8F28-14E546743485</key>
 		<dict>
 			<key>xpos</key>
-			<real>245</real>
+			<real>210</real>
 			<key>ypos</key>
-			<real>160</real>
+			<real>95</real>
 		</dict>
 		<key>E59094FA-7C50-4B18-8B4D-518D96B0966F</key>
 		<dict>
 			<key>xpos</key>
 			<real>45</real>
 			<key>ypos</key>
-			<real>160</real>
+			<real>95</real>
 		</dict>
 		<key>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</key>
 		<dict>
 			<key>xpos</key>
-			<real>445</real>
+			<real>620</real>
 			<key>ypos</key>
-			<real>160</real>
+			<real>95</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
@@ -229,6 +228,27 @@ python3 ./translate.py "$1" $lang;</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
+				<string>en</string>
+				<key>placeholder</key>
+				<string>2 char ISO 639 language code</string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>ASCII characters language</string>
+			<key>label</key>
+			<string>Base language</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>lang</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
 				<string>ru</string>
 				<key>placeholder</key>
 				<string>2 char ISO 639 language code</string>
@@ -238,17 +258,19 @@ python3 ./translate.py "$1" $lang;</string>
 				<true/>
 			</dict>
 			<key>description</key>
-			<string>This language will be used as souce language or target from English</string>
+			<string>Non-ASCII characters language</string>
 			<key>label</key>
-			<string>Base language</string>
+			<string>Secondary language</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
-			<string>lang</string>
+			<string>alt</string>
 		</dict>
 	</array>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>webaddress</key>
 	<string>https://github.com/skynetua/alfred-translate</string>
 </dict>
