@@ -6,16 +6,18 @@ import aiohttp
 import json
 import feedback
 import sys
+import re
 
 
 def is_ascii(s):
-    """http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii"""
+    s = re.sub(r'\W+', '', s)
     return all(ord(c) < 128 for c in s)
 
 def get_translation_direction(text):
     """Returns direction of translation."""
     lang = sys.argv[2]
-    return f'en-{lang}' if is_ascii(text) else f'{lang}-en'
+    alt = sys.argv[3]
+    return f'{lang}-{alt}' if is_ascii(text) else f'{alt}-{lang}'
 
 async def process_requests(urls):
     async with aiohttp.ClientSession() as session:

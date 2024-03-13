@@ -6,8 +6,41 @@
 	<string>com.skynetua.alfred-qtranslate</string>
 	<key>connections</key>
 	<dict>
+		<key>4D336543-B533-47A4-841C-4CD4A8E413D4</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>94EED11C-93A9-4FF4-8F28-14E546743485</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>94EED11C-93A9-4FF4-8F28-14E546743485</key>
 		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>267B3A49-0770-47BA-811F-74D9C1EB3B43</string>
+				<key>modifiers</key>
+				<integer>524288</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
 			<dict>
 				<key>destinationuid</key>
 				<string>7F6DE136-5E1D-4A3A-84E8-269B076CE825</string>
@@ -20,13 +53,13 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
-				<string>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</string>
+				<string>B02D8943-4DFC-48D6-9AD9-DE3926ED57C4</string>
 				<key>modifiers</key>
-				<integer>0</integer>
+				<integer>262144</integer>
 				<key>modifiersubtext</key>
 				<string></string>
 				<key>vitoclose</key>
-				<false/>
+				<true/>
 			</dict>
 		</array>
 		<key>E59094FA-7C50-4B18-8B4D-518D96B0966F</key>
@@ -56,17 +89,21 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>browser</key>
-				<string></string>
-				<key>searcher</key>
-				<integer>1635218546</integer>
+				<key>autopaste</key>
+				<false/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<false/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.systemwebsearch</string>
+			<string>alfred.workflow.output.clipboard</string>
 			<key>uid</key>
-			<string>7F6DE136-5E1D-4A3A-84E8-269B076CE825</string>
+			<string>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -102,6 +139,25 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>autopaste</key>
+				<true/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>267B3A49-0770-47BA-811F-74D9C1EB3B43</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
@@ -127,13 +183,13 @@
 				<key>runningsubtext</key>
 				<string>Translating</string>
 				<key>script</key>
-				<string>python3 ./translate.py "$1" $lang $alt;</string>
+				<string>/usr/bin/python3 ./translate.py "$1" $lang $alt;</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>en-{var:lang}, {var:lang}-en</string>
+				<string>{var:lang}-{var:alt}, {var:alt}-{var:lang}</string>
 				<key>title</key>
 				<string>Translate</string>
 				<key>type</key>
@@ -151,54 +207,99 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>autopaste</key>
-				<false/>
-				<key>clipboardtext</key>
-				<string>{query}</string>
-				<key>ignoredynamicplaceholders</key>
-				<false/>
-				<key>transient</key>
+				<key>text</key>
+				<string>Translate 'query'</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.fallback</string>
+			<key>uid</key>
+			<string>4D336543-B533-47A4-841C-4CD4A8E413D4</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>searcher</key>
+				<integer>1635218546</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.systemwebsearch</string>
+			<key>uid</key>
+			<string>7F6DE136-5E1D-4A3A-84E8-269B076CE825</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argument</key>
+				<string>t {query}</string>
+				<key>leftcursor</key>
 				<false/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.output.clipboard</string>
+			<string>alfred.workflow.utility.showalfred</string>
 			<key>uid</key>
-			<string>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</string>
+			<string>B02D8943-4DFC-48D6-9AD9-DE3926ED57C4</string>
 			<key>version</key>
-			<integer>3</integer>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
 	<string></string>
 	<key>uidata</key>
 	<dict>
+		<key>267B3A49-0770-47BA-811F-74D9C1EB3B43</key>
+		<dict>
+			<key>xpos</key>
+			<real>560</real>
+			<key>ypos</key>
+			<real>185</real>
+		</dict>
+		<key>4D336543-B533-47A4-841C-4CD4A8E413D4</key>
+		<dict>
+			<key>xpos</key>
+			<real>35</real>
+			<key>ypos</key>
+			<real>250</real>
+		</dict>
 		<key>7F6DE136-5E1D-4A3A-84E8-269B076CE825</key>
 		<dict>
 			<key>xpos</key>
-			<real>435</real>
+			<real>560</real>
 			<key>ypos</key>
-			<real>15</real>
+			<real>300</real>
 		</dict>
 		<key>94EED11C-93A9-4FF4-8F28-14E546743485</key>
 		<dict>
 			<key>xpos</key>
 			<real>210</real>
 			<key>ypos</key>
-			<real>95</real>
+			<real>185</real>
+		</dict>
+		<key>B02D8943-4DFC-48D6-9AD9-DE3926ED57C4</key>
+		<dict>
+			<key>xpos</key>
+			<real>425</real>
+			<key>ypos</key>
+			<real>360</real>
 		</dict>
 		<key>E59094FA-7C50-4B18-8B4D-518D96B0966F</key>
 		<dict>
 			<key>xpos</key>
-			<real>45</real>
+			<real>30</real>
 			<key>ypos</key>
-			<real>95</real>
+			<real>120</real>
 		</dict>
 		<key>ECA3047F-8C4F-4C35-AA1F-36F3E4FF3ADD</key>
 		<dict>
 			<key>xpos</key>
-			<real>620</real>
+			<real>560</real>
 			<key>ypos</key>
-			<real>95</real>
+			<real>70</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
