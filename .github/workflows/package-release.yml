@@ -1,0 +1,58 @@
+name: Package and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Package source code
+        run: |
+          cd src
+          zip -r ../quick-translate.alfredworkflow * # Include all files from src directory directly into the root of the archive
+
+      - name: Get previous tag
+        id: get_previous_tag
+        run: echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Get commits since previous tag
+        id: get_commits_since_previous_tag
+        run: echo "COMMITS_SINCE_PREVIOUS_TAG=$(git log --pretty=format:%s $PREVIOUS_TAG..HEAD)" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREVIOUS_TAG: ${{ steps.get_previous_tag.outputs.PREVIOUS_TAG }}
+          COMMITS_SINCE_PREVIOUS_TAG: ${{ steps.get_commits_since_previous_tag.outputs.COMMITS_SINCE_PREVIOUS_TAG }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this release:
+            ${{ env.COMMITS_SINCE_PREVIOUS_TAG }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: quick-translate.alfredworkflow
+          asset_name: quick-translate.alfredworkflow
+          asset_content_type: application/zip
